@@ -1,0 +1,249 @@
+#: import SlideTransition kivy.uix.screenmanager.SlideTransition
+
+<MenuScreen>:
+    BoxLayout:
+        Label:
+            text: 'Game of Life'
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                text: 'Create a World'
+                on_press:
+                    root.manager.transition= SlideTransition(direction="up")
+                    app.root.current= 'type'
+            Button:
+                text: 'Settings'
+                on_press:
+                    root.manager.transition= SlideTransition(direction="left")
+                    app.root.current= 'settings'
+
+
+<WorldType>:
+    BoxLayout:
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'GameOfLife'
+            Button:
+                text: 'Back'
+                size_hint: 1, .2
+                on_press:
+                    root.manager.transition= SlideTransition(direction="down")
+                    app.root.current= 'menu'
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                text: 'Create a new World'
+                on_press:
+                    root.size_world()
+            Button:
+                text: 'Beacon'
+                on_press:
+                    root.pre_world('Beacon')
+            Button:
+                text: 'Blinker'
+                on_press:
+                    root.pre_world('Blinker')
+            Button:
+                text: 'Glider'
+                on_press:
+                    root.pre_world('Glider')
+            Button:
+                text: 'Gun'
+                on_press:
+                    root.pre_world('Gun')
+            Button:
+                text: 'Pulsar'
+                on_press:
+                    root.pre_world('Pulsar')
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            Label:
+                id: square
+                text: 'Square'
+            CheckBox:
+                group: 'world_type'
+                on_active: root.shape_world('square')
+                state: 'down'
+            Label:
+                id: round
+                text: 'Round'
+            CheckBox:
+                group: 'world_type'
+                on_active: root.shape_world('round')
+
+        BoxLayout:
+            Label:
+                text: 'Life color'
+            BoxLayout:
+                orientation: 'vertical'
+                BoxLayout:
+                    Slider:
+                        id: life_r
+                        min: 0
+                        max: 256
+                        value: root.life_color[0]
+                        orientation: "horizontal"
+                        on_value: root.life_color[0] = self.value
+                    Label:
+                        text: str(int(life_r.value))
+                BoxLayout:
+                    Slider:
+                        id: life_g
+                        min: 0
+                        max: 256
+                        value: root.life_color[1]
+                        orientation: "horizontal"
+                        on_value: root.life_color[1] = self.value
+                    Label:
+                        text: str(int(life_g.value))
+                BoxLayout:
+                    Slider:
+                        id: life_b
+                        min: 0
+                        max: 256
+                        value: root.life_color[2]
+                        orientation: "horizontal"
+                        on_value: root.life_color[2] = self.value
+                    Label:
+                        text: str(int(life_b.value))
+            RelativeLayout:
+                canvas:
+                    Color:
+                        rgb: (int(life_r.value)/255), (int(life_g.value)/255), (int(life_b.value)/255)
+                    Rectangle:
+                        size: self.size
+
+        BoxLayout:
+            Label:
+                text: 'Dead color'
+            BoxLayout:
+                orientation: 'vertical'
+                BoxLayout:
+                    Slider:
+                        id: dead_r
+                        min: 0
+                        max: 256
+                        value: root.dead_color[0]
+                        orientation: "horizontal"
+                        on_value: root.dead_color[0] = self.value
+                    Label:
+                        text: str(int(dead_r.value))
+                BoxLayout:
+                    Slider:
+                        id: dead_g
+                        min: 0
+                        max: 256
+                        value: root.dead_color[1]
+                        orientation: "horizontal"
+                        on_value: root.dead_color[1] = self.value
+                    Label:
+                        text: str(int(dead_g.value))
+                BoxLayout:
+                    Slider:
+                        id: dead_b
+                        min: 0
+                        max: 256
+                        value: root.dead_color[2]
+                        orientation: "horizontal"
+                        on_value: root.dead_color[2] = self.value
+                    Label:
+                        text: str(int(dead_b.value))
+            RelativeLayout:
+                canvas:
+                    Color:
+                        rgb: (int(dead_r.value)/255), (int(dead_g.value)/255), (int(dead_b.value)/255)
+                    Rectangle:
+                        size: self.size
+
+        BoxLayout:
+            Label:
+                text: 'Time speed'
+            Slider:
+                id: time_speed
+                min: 1
+                max: 10
+                value: root.time_speed
+                orientation: 'horizontal'
+                on_value: root.time_speed = self.value
+            Label:
+                text: str(int(time_speed.value))
+
+        Button:
+            text: 'Back'
+            on_press:
+                root.manager.transition.direction = "right"
+                app.root.current= 'menu'
+
+<CustomSize>:
+    x_size: x_size
+    y_size: y_size
+    p_life: p_life
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            Label:
+                text: '% of live'
+            TextInput:
+                id: p_life
+                text: '10'
+        BoxLayout:
+            orientation: 'horizontal'
+            Label:
+                text: 'Set world width'
+            TextInput:
+                id: x_size
+                text: '100'
+        BoxLayout:
+            Label:
+                text: 'Set world height'
+            TextInput:
+                id: y_size
+                text: '100'
+        Button:
+            text: 'Start'
+            on_press:
+                root.create_world()
+
+<Cell>:
+    size_hint: None, None
+    canvas.before:
+        Color:
+            rgba: self.color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+<WorldScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        RelativeLayout:
+            size_hint: 1, None
+            height: '30dp'
+            Label:
+                text: root.days
+                font_size: "25dp"
+                size_hint: .5, 1
+                pos_hint: {"right": 1}
+            Button:
+                text: 'Back'
+                size_hint: .5, 1
+                background_color: 1, 0, .78, 1
+                on_press:
+                    root.stop()
+                    root.clear()
+                    root.days = '1'
+                    root.manager.transition= SlideTransition(direction="down")
+                    app.root.current= 'menu'
+        BoxLayout:
+            ToggleButton:
+                text:''
+                state: 'down'
+                background_color: 0, 0, 0, 0
+                on_state: root.pause(self)
+
